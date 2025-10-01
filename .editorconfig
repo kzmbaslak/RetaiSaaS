@@ -1,0 +1,17 @@
+root = true
+
+[*.cs]
+dotnet_diagnostic.CA2007.severity = none
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+# İsimlendirme
+dotnet_naming_rule.async_methods_end_with_async.symbols  = async_methods
+dotnet_naming_rule.async_methods_end_with_async.style    = end_in_async
+dotnet_naming_symbols.async_methods.applicable_kinds     = method
+dotnet_naming_symbols.async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.async_methods.required_modifiers   = async
+dotnet_naming_style.end_in_async.required_suffix         = Async
+dotnet_naming_style.end_in_async.capitalization          = pascal_case

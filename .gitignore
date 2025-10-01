@@ -1,0 +1,77 @@
+# --- .NET / Visual Studio ---
+**/bin/
+**/obj/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.ipch
+*.dbmdl
+*.pch
+*.opensdf
+*.sdf
+*.cache
+*.log
+
+# VS çalışma klasörü (IDE cache’leri)
+.vs/
+
+# Rider / ReSharper
+.idea/
+_ReSharper*/
+*.DotSettings.user
+resharper-host/*/
+
+# Test çıktı ve coverage
+TestResults/
+*.coverage
+*.coveragexml
+coverage*.json
+.coverage*
+
+# Yayın/paketleme çıktıları
+artifacts/
+**/publish/
+*.nupkg
+*.snupkg
+
+# NuGet
+# (Modern .NET’te PackageReference kullanıldığı için packages/ yoktur.
+# Eski projelerde varsa exclude edilebilir.)
+packages/
+# Paket geri yükleme dosyalarını koru:
+!**/packages/build/
+!**/packages/repositories.config
+
+# Kullanıcıya özel publish profilleri
+*.pubxml.user
+
+# ASP.NET statik restore’ları (LibMan/NPM ile çekilen dosyalar)
+**/wwwroot/lib/*
+# LibMan tanımı takip edilmeli:
+!libman.json
+
+# Node (SPA / front-end entegre projeler)
+node_modules/
+dist/
+# Kilit dosyaları projeyle birlikte tutulmalı:
+!package-lock.json
+!yarn.lock
+!pnpm-lock.yaml
+
+# VS Code (isteğe bağlı)
+# Takım genel ayarları commit edilebilir, kullanıcıya özelleri etmeyin:
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Docker/Container ara dosyaları
+**/.docker/
+**/.container/
+
+# SQLite ve temporary
+*.sqlite-journal
+*.DS_Store
+Thumbs.db
