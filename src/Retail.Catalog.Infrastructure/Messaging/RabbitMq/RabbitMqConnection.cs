@@ -27,8 +27,8 @@ public sealed class RabbitMqConnection : IDisposable
     }
     public void Dispose()
     {
-        try { if (Channel.IsOpen) Channel.Close(); } catch { }
-        try { if (Connection.IsOpen) Connection.Close(); } catch { }
+        try { if (Channel.IsOpen) Channel.CloseAsync(); } catch { }
+        try { if (Connection.IsOpen) Connection.CloseAsync(); } catch { }
         Channel.Dispose();
         Connection.Dispose();
     }
