@@ -1,4 +1,3 @@
-using System.Reflection;
 using MediatR;
 using Retail.BuildingBlocks.Primitives;
 using Retail.Catalog.Domain.Aggregates.ProductAggregate;
@@ -10,11 +9,11 @@ namespace Retail.Catalog.Application.Products.Commands.Create;
 public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<ProductId>>
 {
     private readonly IProductRepository _productRepository;
-    private readonly IEventBus _eventBus;
-    public CreateProductCommandHandler(IProductRepository productRepository, IEventBus eventBus)
+    private readonly IEventPublisher _eventPublisher;
+    public CreateProductCommandHandler(IProductRepository productRepository, IEventPublisher eventPublisher)
     {
         _productRepository = productRepository;
-        _eventBus = eventBus;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<Result<ProductId>> Handle(CreateProductCommand req, CancellationToken ct)
@@ -30,7 +29,7 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
 
         // Basit integration event (DTO)
         var evt = new ProductCreatedIntegrationEvent(product.Id.Value, product.TenantId, product.Sku, product.Name);
-        await _eventBus.PublishAsync(evt, topic: "catalog.product.created", ct);
+        await _eventPublisher.PublishAsync(evt, topic: "catalog.product.created", ct);
 
         return Result<ProductId>.Ok(product.Id);
     }
