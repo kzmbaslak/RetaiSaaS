@@ -1,11 +1,16 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Retail.Api.Filters.Tenant;
 using Retail.Catalog.Application.Behaviors;
 using Retail.Catalog.Application.Products.Commands.Create;
 using Retail.Catalog.Domain.Repositories;
 using Retail.Catalog.Infrastructure.Messaging;
+using Retail.Catalog.Infrastructure.Messaging.Configuration;
+using Retail.Catalog.Infrastructure.Messaging.RabbitMq;
+using Retail.Catalog.Infrastructure.Messaging.Routing;
+using Retail.Catalog.Infrastructure.Messaging.Serialization;
 using Retail.Catalog.Infrastructure.Persistence;
 using Retail.Catalog.Infrastructure.Repositories;
 using Retail.Catalog.Infrastructure.Service;
@@ -57,14 +62,19 @@ public static class DependencyInjection
         service.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // RabbitMQ EventBus
-        var mq = configuration.GetSection("RabbitMq");
-        service.AddSingleton<IEventBus>(_ => new RabbitMQEventBus(
-            host: mq.GetValue<string>("host")!,
-            port: mq.GetValue<int>("port"),
-            user: mq.GetValue<string>("user")!,
-            pass: mq.GetValue<string>("pass")!,
-            exchange: mq.GetValue<string>("exchange")!
-        ));
+        // Options pattern
+        service.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
+        service.AddSingleton(sp => sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value);
+
+        // Messaging 
+        service.AddSingleton<IMessageSerializer, SystemTextJsonMessageSerializer>();
+        service.AddSingleton<IRoutingKeyResolver, ConventionRoutingKeyResolver>();
+        service.AddSingleton<RabbitMqConnection>();
+        service.AddSingleton<IEventPublisher, RabbitMqPublisher>();
+        service.AddSingleton<IEventSubscriber, RabbitMqSubscriber>();
+        
+        // Optional facade (tek servisle kullanmak istersen)
+        service.AddSingleton<EventBus>();
 
         return service;
     }
