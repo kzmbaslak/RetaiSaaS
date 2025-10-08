@@ -4,16 +4,16 @@ namespace Retail.Api.Workers;
 
 public class ProductCreatedSubscriber : BackgroundService
 {
-    private readonly IEventBus _eventBus;
+    private readonly IEventSubscriber _eventSubscriber;
 
-    public ProductCreatedSubscriber(IEventBus eventBus)
+    public ProductCreatedSubscriber(IEventSubscriber eventSubscriber)
     {
-        _eventBus = eventBus;
+        _eventSubscriber = eventSubscriber;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await _eventBus.SubscribeAsync<ProductCreatedIntegrationEvent>(
+        await _eventSubscriber.SubscribeAsync<ProductCreatedIntegrationEvent>(
             subscription: "api-reporting",
             handler: async (evt) =>
             {
