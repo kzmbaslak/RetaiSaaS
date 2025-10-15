@@ -1,4 +1,4 @@
-namespace Retail.Catalog.Infrastructure.Messaging;
+namespace Retail.Shared.Abstruction.Messaging;
 
 public interface IIntegrationEvent
 {
