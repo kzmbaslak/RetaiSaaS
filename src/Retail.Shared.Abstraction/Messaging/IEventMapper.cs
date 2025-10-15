@@ -1,4 +1,4 @@
-namespace Retail.Catalog.Infrastructure.Messaging;
+namespace Retail.Shared.Abstraction.Messaging;
 
 public interface IEventMapper
 {
