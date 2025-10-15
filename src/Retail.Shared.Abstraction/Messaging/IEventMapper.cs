@@ -1,3 +1,5 @@
+using Retail.Shared.Abstruction.Messaging;
+
 namespace Retail.Shared.Abstraction.Messaging;
 
 public interface IEventMapper
