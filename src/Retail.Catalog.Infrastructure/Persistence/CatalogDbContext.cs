@@ -20,6 +20,14 @@ public sealed class CatalogDbContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ProcessedMessage>(entity =>
+        {
+            entity.ToTable("processed_messages");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.MessageId).IsUnique();
+            entity.Property(e => e.MessageId).IsRequired().HasMaxLength(100);
+        });
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogDbContext).Assembly);//EF Core, bu assembly’de IEntityTypeConfiguration<T> arayüzünü implement eden tüm sınıfları yansıma (reflection) ile tarar.
 
         //Global Tenant Filtresi
