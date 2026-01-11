@@ -10,7 +10,7 @@ namespace Retail.Catalog.Infrastructure.Persistence.Interceptors;
 public sealed class OutboxSaveChangesInterceptor : SaveChangesInterceptor
 {
     IEventMapper _eventMapper;
-    JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
@@ -24,11 +24,7 @@ public sealed class OutboxSaveChangesInterceptor : SaveChangesInterceptor
         EnqueueOutbox(eventData.Context);
         return base.SavingChanges(eventData, result);
     }
-    public override ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
-    {
-        EnqueueOutbox(eventData.Context);
-        return base.SavedChangesAsync(eventData, result, cancellationToken);
-    }
+
     private void EnqueueOutbox(DbContext? context)
     {
         if (context is null) return;
