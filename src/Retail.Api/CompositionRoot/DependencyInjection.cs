@@ -8,12 +8,16 @@ using Retail.Catalog.Application.Products.Commands.Create;
 using Retail.Catalog.Domain.Repositories;
 using Retail.Catalog.Infrastructure.Messaging;
 using Retail.Catalog.Infrastructure.Messaging.Configuration;
+using Retail.Catalog.Infrastructure.Messaging.Mapping;
 using Retail.Catalog.Infrastructure.Messaging.RabbitMq;
 using Retail.Catalog.Infrastructure.Messaging.Routing;
 using Retail.Catalog.Infrastructure.Messaging.Serialization;
 using Retail.Catalog.Infrastructure.Persistence;
+using Retail.Catalog.Infrastructure.Persistence.BackgroundServices.BackgroundServices;
+using Retail.Catalog.Infrastructure.Persistence.Interceptors;
 using Retail.Catalog.Infrastructure.Repositories;
 using Retail.Catalog.Infrastructure.Service;
+using Retail.Shared.Abstraction.Messaging;
 using Retail.Shared.Abstractions.MultiTenancy;
 using Retail.Shared.Abstractions.Time;
 using Retail.Shared.Abstruction.Messaging;
@@ -52,11 +56,6 @@ public static class DependencyInjection
         service.AddHttpContextAccessor();
         service.AddScoped<ITenantProvider, HttpTenantProvider>();
 
-        service.AddDbContext<CatalogDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString("pg"));
-            //options.UseSnakeCaseNamingConvention();
-        });
 
         service.AddScoped<IProductRepository, ProductRepository>();
         service.AddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -72,11 +71,28 @@ public static class DependencyInjection
         service.AddSingleton<RabbitMqConnection>();
         service.AddSingleton<IEventPublisher, RabbitMqPublisher>();
         service.AddSingleton<IEventSubscriber, RabbitMqSubscriber>();
-        
+
         // Optional facade (tek servisle kullanmak istersen)
         service.AddSingleton<EventBus>();
 
+        // Mapper & Outbox
+        service.AddSingleton<IEventMapper, DomainToIntegrationEventMapper>();
+        service.AddScoped<OutboxSaveChangesInterceptor>();
+        service.AddHostedService<OutboxPublisher>();
+
+        // Idempotency store (subscriber tarafında kullanmak üzere)
+        service.AddScoped<IProcessedMessageStore, PostgresProcessedMessageStore>();
+
+        // DbContext interceptor enjekte etmek
+        service.AddDbContext<CatalogDbContext>((provider, options) =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString("pg"));
+            //options.UseSnakeCaseNamingConvention();
+            var interceptor = provider.GetRequiredService<OutboxSaveChangesInterceptor>();
+            options.AddInterceptors(interceptor);
+        });
+
         return service;
     }
-    
+
 }
