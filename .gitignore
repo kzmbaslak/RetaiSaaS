@@ -75,3 +75,6 @@ dist/
 *.sqlite-journal
 *.DS_Store
 Thumbs.db
+
+#ef core
+**/Migrations/
