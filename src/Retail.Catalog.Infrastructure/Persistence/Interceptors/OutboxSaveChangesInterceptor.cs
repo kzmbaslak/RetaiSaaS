@@ -24,6 +24,27 @@ public sealed class OutboxSaveChangesInterceptor : SaveChangesInterceptor
         EnqueueOutbox(eventData.Context);
         return base.SavingChanges(eventData, result);
     }
+    override public async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    {
+        EnqueueOutbox(eventData.Context);
+        return await base.SavingChangesAsync(eventData, result, cancellationToken);
+    }
+
+    public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
+    {
+        ClearDomainEvents(eventData.Context!);
+        return base.SavedChanges(eventData, result);
+    }
+
+    private void ClearDomainEvents(DbContext dbContext)
+    {
+        var aggregateRoots = dbContext.ChangeTracker
+            .Entries<AggregateRoot<object>>()
+            .Select(e => e.Entity)
+            .ToList();
+        foreach (var aggregateRoot in aggregateRoots)
+            aggregateRoot.ClearDomainEvents();
+    }
 
     private void EnqueueOutbox(DbContext? context)
     {
