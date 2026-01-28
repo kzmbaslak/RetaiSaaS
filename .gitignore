@@ -1,4 +1,5 @@
 # --- .NET / Visual Studio ---
+.vscode/
 **/bin/
 **/obj/
 *.user
