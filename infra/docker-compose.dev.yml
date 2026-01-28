@@ -7,33 +7,33 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
       POSTGRES_DB: retail
-    ports: ["5432:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data]
+    ports: [ "5432:5432" ]
+    volumes: [ pgdata:/var/lib/postgresql/data ]
 
   redis:
     image: redis:7
     container_name: retail_redis
-    ports: ["6379:6379"]
+    ports: [ "6379:6379" ]
 
   rabbit:
     image: rabbitmq:3-management
     container_name: retail_rabbit
-    ports: ["5672:5672","15672:15672"]
+    ports: [ "5672:5672", "15672:15672" ]
 
   seq:
     image: datalust/seq
     container_name: retail_seq
-    environment: [ACCEPT_EULA=Y, SEQ_FIRSTRUN_ADMINPASSWORD=pass]
-    ports: ["5341:80"]
+    environment: [ ACCEPT_EULA=Y, SEQ_FIRSTRUN_ADMINPASSWORD=pass ]
+    ports: [ "5341:80" ]
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com   # Giriş için kullanıcı maili
-      PGADMIN_DEFAULT_PASSWORD: admin          # Giriş için şifre
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com # Giriş için kullanıcı maili
+      PGADMIN_DEFAULT_PASSWORD: admin # Giriş için şifre
     ports:
-      - "5050:80"   # Host:Container → http://localhost:5050 ile erişilir
+      - "6050:80" # Host:Container → http://localhost:5050 ile erişilir
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 volumes:
