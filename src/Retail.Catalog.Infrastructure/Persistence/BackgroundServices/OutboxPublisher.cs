@@ -29,7 +29,11 @@ public sealed class OutboxPublisher : BackgroundService
                     .OrderBy(o => o.OccurredAtUtc)
                     .Take(100)
                     .ToListAsync();
-
+                if (batch.Count == 0)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    continue;
+                }
                 foreach (var message in batch)
                 {
                     try
@@ -46,14 +50,11 @@ public sealed class OutboxPublisher : BackgroundService
                     {
                         message.Error = ex.Message;
                     }
-                    if (batch.Count > 0)
-                    {
-                        await db.SaveChangesAsync(stoppingToken);
-                    }
 
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
                 }
+                await db.SaveChangesAsync(stoppingToken);
             }
             catch
             {
